@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <node pkg="pedestrian_autoware_bridge" exec="pedestrian_autoware_bridge_node" name="pedestrian_autoware_bridge_node" respawn="false" output="screen"/>
+</launch>  
