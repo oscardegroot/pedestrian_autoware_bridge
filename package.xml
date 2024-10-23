@@ -24,7 +24,7 @@
   <depend>geometry_msgs</depend>
   <depend>derived_object_msgs</depend>
   <depend>mpc_planner_msgs</depend>
-  <!-- <depend>dummy_perception_publisher</depend> -->
+  <depend>tier4_simulation_msgs</depend>
 
   <export>
     <build_type>ament_cmake</build_type>

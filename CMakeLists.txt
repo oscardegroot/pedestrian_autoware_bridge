@@ -13,7 +13,7 @@ set(DEPENDENCIES
   geometry_msgs
   derived_object_msgs
   mpc_planner_msgs
-  dummy_perception_publisher
+  tier4_simulation_msgs
 )
 
 # find dependencies

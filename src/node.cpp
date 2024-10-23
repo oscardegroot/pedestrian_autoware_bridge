@@ -8,14 +8,14 @@
 #include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 #include "derived_object_msgs/msg/object_array.hpp"
 
-#include <dummy_perception_publisher/msg/object.hpp>
+#include <tier4_simulation_msgs/msg/dummy_object.hpp>
 
 #include <random>
 #include <unordered_map>
 
-using autoware_auto_perception_msgs::msg::ObjectClassification;
-using autoware_auto_perception_msgs::msg::Shape;
-using dummy_perception_publisher::msg::Object;
+// using autoware_auto_perception_msgs::msg::ObjectClassification;
+// using autoware_auto_perception_msgs::msg::Shape;
+using tier4_simulation_msgs::msg::DummyObject;
 using std::placeholders::_1;
 using namespace std::chrono_literals;
 
@@ -31,7 +31,7 @@ public:
             10, // Queue size
             std::bind(&PedestrianListenerNode::callback, this, _1));
 
-        dummy_object_info_pub_ = this->create_publisher<Object>("/simulation/dummy_perception_publisher/object_info", 1);
+        dummy_object_info_pub_ = this->create_publisher<DummyObject>("/simulation/dummy_perception_publisher/object_info", 1);
 
         // Pedestrian simulator
         _ped_reset_pub = this->create_publisher<std_msgs::msg::Empty>(
@@ -60,7 +60,7 @@ public:
     }
 
 private:
-    std::unordered_map<int, Object> known_pedestrians;
+    std::unordered_map<int, DummyObject> known_pedestrians;
     bool first = true;
 
     // Callback function that processes incoming data from the topic
@@ -69,10 +69,10 @@ private:
         if (first)
         {
             first = false;
-            Object delete_all_msg;
+            DummyObject delete_all_msg;
             delete_all_msg.header.frame_id = "map";
             delete_all_msg.header.stamp = this->get_clock()->now();
-            delete_all_msg.action = dummy_perception_publisher::msg::Object::DELETEALL;
+            delete_all_msg.action = DummyObject::DELETEALL;
             dummy_object_info_pub_->publish(delete_all_msg);
             return;
         }
@@ -84,18 +84,18 @@ private:
                 // Spawn new pedestrian
                 RCLCPP_INFO(this->get_logger(), "New Pedestrian, ID: %d", pedestrian.id);
 
-                Object object{};
+                DummyObject object{};
 
                 // header
                 object.header.frame_id = "map";
                 object.header.stamp = this->get_clock()->now();
 
                 // semantic
-                object.classification.label = ObjectClassification::PEDESTRIAN;
+                object.classification.label = object.classification.PEDESTRIAN;
                 object.classification.probability = 1.0;
 
                 // shape
-                object.shape.type = Shape::CYLINDER;
+                object.shape.type = object.shape.CYLINDER;
                 const double width = 0.6;
                 const double length = 0.6;
                 object.shape.dimensions.x = length;
@@ -125,7 +125,7 @@ private:
                 object.initial_state.accel_covariance.accel.linear.z = 0.0;
                 object.max_velocity = pedestrian.twist.linear.x;
                 object.min_velocity = pedestrian.twist.linear.x;
-                object.action = Object::ADD;
+                object.action = DummyObject::ADD;
 
                 dummy_object_info_pub_->publish(object);
 
@@ -152,7 +152,7 @@ private:
                 object.initial_state.accel_covariance.accel.linear.z = 0.0;
                 object.max_velocity = pedestrian.twist.linear.x;
                 object.min_velocity = pedestrian.twist.linear.x;
-                object.action = Object::MODIFY;
+                object.action = DummyObject::MODIFY;
 
                 dummy_object_info_pub_->publish(object);
             }
@@ -242,7 +242,7 @@ private:
     // Subscriber object to hold the subscription
     rclcpp::Subscription<derived_object_msgs::msg::ObjectArray>::SharedPtr subscription_;
     rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _goal_reached_sub;
-    rclcpp::Publisher<Object>::SharedPtr dummy_object_info_pub_;
+    rclcpp::Publisher<DummyObject>::SharedPtr dummy_object_info_pub_;
 
     // Pedestrian Simulator
     rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr _ped_reset_pub;
